@@ -21,12 +21,14 @@ export async function Products({ offset }: { offset?: number }) {
         ))}
       </div>
     }>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${
+        products.length === 1 ? 'max-w-4xl mx-auto' : ''
+      }`}>
         {products.map((product, index) => {
-          const isFirstProduct = index === 0 && (offset === undefined || offset === 0)
+          const isFirstProduct = index === 0
           
+          // 1商品目は横並びレイアウト（1ページ目の1商品目と同じスタイル）
           if (isFirstProduct) {
-            // 1商品目は横並びレイアウト
             return (
               <div 
                 key={product.id} 
