@@ -2,7 +2,6 @@ import { Products } from './components/Products'
 import { getSiteInfo } from './libs/microcms'
 import Image from 'next/image'
 
-export const runtime = 'edge'
 export default async function Home() {
   const siteInfo = await getSiteInfo()
 

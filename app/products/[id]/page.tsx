@@ -31,7 +31,6 @@ export async function generateMetadata(
   }
 }
 
-export const runtime = 'edge'
 export default async function Product({ params, searchParams }: PageProps) {
   const { id: productId } = await params
   const searchParamsResolved = await searchParams
