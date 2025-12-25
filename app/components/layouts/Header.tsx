@@ -30,9 +30,10 @@ export function Header(props: { siteInfo: SiteInfo }) {
               className='menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-300'
             >
               <li>
-                <Link href='/' className='font-medium hover:text-primary'>
-                  Home
-                </Link>
+                <Link href='/' className='font-semibold'>ホーム</Link>
+              </li>
+              <li>
+                <Link href='/products'>商品一覧</Link>
               </li>
             </ul>
           </div>
@@ -46,12 +47,10 @@ export function Header(props: { siteInfo: SiteInfo }) {
         <div className='navbar-center hidden lg:flex'>
           <ul className='menu menu-horizontal px-1 gap-2'>
             <li>
-              <Link
-                href='/'
-                className='font-medium hover:text-primary transition-colors rounded-lg'
-              >
-                Home
-              </Link>
+              <Link href='/' className='font-semibold'>ホーム</Link>
+            </li>
+            <li>
+              <Link href='/products'>商品一覧</Link>
             </li>
           </ul>
         </div>

@@ -7,12 +7,12 @@ export function Pagination({ totalCount, limit }: { totalCount: number; limit: n
   if (totalPages <= 1) return null
 
   return (
-    <div className='join shadow-md'>
-      {range(1, totalPages).map((number, index) => (
-        <Link
-          key={index}
-          href={`/products/pages/${number}`}
-          className='join-item btn btn-outline hover:btn-primary transition-colors duration-200'
+    <div className='join'>
+      {range(1, Math.ceil(totalCount / limit)).map((number, index) => (
+        <Link 
+          key={index} 
+          href={number === 1 ? '/products' : `/products/pages/${number}`} 
+          className='join-item btn'
         >
           {number}
         </Link>
