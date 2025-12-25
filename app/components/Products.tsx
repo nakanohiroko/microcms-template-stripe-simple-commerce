@@ -8,85 +8,153 @@ export async function Products({ offset }: { offset?: number }) {
   const { contents: products, ...args } = await listProducts({ offset })
   const { totalCount, limit } = args
   return (
-    <Suspense fallback={<div className='flex justify-center items-center min-h-[400px]'><span className='loading loading-spinner loading-lg'></span></div>}>
-      {products.map((product, index) => {
-        return (
-          <section
-            key={product.id}
-            className='group bg-base-100 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-base-300 animate-fade-in'
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            {product.featured_image ? (
-              <Link href={`/products/${product.id}`} className='block overflow-hidden'>
-                <div className='relative aspect-square overflow-hidden bg-base-200'>
-                  <Image
-                    src={product.featured_image.url}
-                    alt={`Product image of ${product.name}`}
-                    width={product.featured_image.width}
-                    height={product.featured_image.height}
-                    className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110'
-                  />
-                  <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-                </div>
-              </Link>
-            ) : null}
-            <div className='p-6'>
-              <h2 className='text-xl font-bold mb-3 line-clamp-2 min-h-[3.5rem]'>
-                <Link
-                  href={`/products/${product.id}`}
-                  className='hover:text-primary transition-colors duration-200'
-                >
-                  {product.name}
-                </Link>
-              </h2>
-
-              <form action={`/api/${product.id}/checkout`} method='POST'>
-                <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-4'>
-                  <div className='flex items-baseline gap-2'>
-                    <span className='text-2xl font-bold text-primary'>
-                      {product.price.toLocaleString()}
-                    </span>
-                    <span className='text-base text-base-content/70'>
-                      {product.currency[0]}
-                    </span>
-                  </div>
-
-                  <button
-                    type='submit'
-                    className='btn btn-primary w-full sm:w-auto min-w-[120px] hover:scale-105 transition-transform duration-200 shadow-md hover:shadow-lg'
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      className='h-5 w-5 mr-2'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      stroke='currentColor'
-                      strokeWidth={2}
-                      aria-hidden='true'
-                      focusable='false'
-                    >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        d='M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z'
-                      />
-                    </svg>
-                    購入する
-                  </button>
-                </div>
-                <input type='hidden' name='amount' value={product.price} />
-                <input type='hidden' name='currency' value={product.currency} />
-                <input type='hidden' name='name' value={product.name} />
-                {product.featured_image ? (
-                  <input type='hidden' name='image' value={product.featured_image.url} />
-                ) : null}
-              </form>
+    <Suspense fallback={
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className='card bg-base-100 shadow-xl animate-pulse'>
+            <div className='h-64 bg-gray-200 rounded-t-2xl'></div>
+            <div className='card-body'>
+              <div className='h-4 bg-gray-200 rounded w-3/4 mb-2'></div>
+              <div className='h-4 bg-gray-200 rounded w-1/2'></div>
             </div>
-          </section>
-        )
-      })}
-      <div className='col-span-full flex justify-center mt-12'>
-        <Pagination totalCount={totalCount} limit={limit} />
+          </div>
+        ))}
+      </div>
+    }>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+        {products.map((product, index) => {
+          const isFirstProduct = index === 0 && (offset === undefined || offset === 0)
+          
+          if (isFirstProduct) {
+            // 1商品目は横並びレイアウト
+            return (
+              <div 
+                key={product.id} 
+                className='card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden group md:col-span-2 lg:col-span-2 xl:col-span-2'
+              >
+                <div className='flex flex-col md:flex-row'>
+                  {/* 画像セクション（左側） */}
+                  <Link href={`/products/${product.id}`} className='relative overflow-hidden md:w-1/2 flex-shrink-0'>
+                    {product.featured_image ? (
+                      <div className='relative w-full h-64 md:h-96 overflow-hidden'>
+                        <Image
+                          src={product.featured_image.url}
+                          alt={`Product image of ${product.name}`}
+                          width={product.featured_image.width}
+                          height={product.featured_image.height}
+                          className='object-cover w-full h-full group-hover:scale-110 transition-transform duration-300'
+                        />
+                      </div>
+                    ) : (
+                      <div className='w-full h-64 md:h-96 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center'>
+                        <svg className='w-24 h-24 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                        </svg>
+                      </div>
+                    )}
+                  </Link>
+                  
+                  {/* 商品情報セクション（右側） */}
+                  <div className='card-body p-6 md:p-8 md:w-1/2 flex flex-col justify-between'>
+                    <div>
+                      <h2 className='card-title text-2xl mb-3'>
+                        <Link href={`/products/${product.id}`} className='hover:text-blue-600 transition-colors'>
+                          {product.name}
+                        </Link>
+                      </h2>
+                      {product.description && (
+                        <p className='text-gray-600 text-base mb-6 line-clamp-4'>
+                          {product.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className='card-actions flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto'>
+                      <div className='text-3xl font-bold text-blue-600'>
+                        {product.price.toLocaleString()} <span className='text-base'>{product.currency[0]}</span>
+                      </div>
+                      <form action={`/api/${product.id}/checkout`} method='POST' className='flex-shrink-0 w-full sm:w-auto'>
+                        <button
+                          type='submit'
+                          className='btn btn-primary btn-md md:btn-lg w-full sm:w-auto'
+                        >
+                          購入する
+                        </button>
+                        <input type='hidden' name='amount' value={product.price} />
+                        <input type='hidden' name='currency' value={product.currency} />
+                        <input type='hidden' name='name' value={product.name} />
+                        {product.featured_image ? (
+                          <input type='hidden' name='image' value={product.featured_image.url} />
+                        ) : null}
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          }
+          
+          // その他の商品は通常の縦並びレイアウト
+          return (
+            <div 
+              key={product.id} 
+              className='card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden group'
+            >
+              <Link href={`/products/${product.id}`} className='relative overflow-hidden'>
+                {product.featured_image ? (
+                  <div className='relative w-full h-64 overflow-hidden'>
+                    <Image
+                      src={product.featured_image.url}
+                      alt={`Product image of ${product.name}`}
+                      width={product.featured_image.width}
+                      height={product.featured_image.height}
+                      className='object-cover w-full h-full group-hover:scale-110 transition-transform duration-300'
+                    />
+                  </div>
+                ) : (
+                  <div className='w-full h-64 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center'>
+                    <svg className='w-24 h-24 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                    </svg>
+                  </div>
+                )}
+              </Link>
+              <div className='card-body p-6'>
+                <h2 className='card-title text-lg mb-2'>
+                  <Link href={`/products/${product.id}`} className='hover:text-blue-600 transition-colors'>
+                    {product.name}
+                  </Link>
+                </h2>
+                {product.description && (
+                  <p className='text-sm text-gray-600 line-clamp-2 mb-4'>
+                    {product.description}
+                  </p>
+                )}
+                <div className='card-actions justify-between items-center mt-auto'>
+                  <div className='text-2xl font-bold text-blue-600'>
+                    {product.price.toLocaleString()} <span className='text-sm'>{product.currency[0]}</span>
+                  </div>
+                  <form action={`/api/${product.id}/checkout`} method='POST' className='flex-shrink-0'>
+                    <button
+                      type='submit'
+                      className='btn btn-primary btn-sm md:btn-md'
+                    >
+                      購入する
+                    </button>
+                    <input type='hidden' name='amount' value={product.price} />
+                    <input type='hidden' name='currency' value={product.currency} />
+                    <input type='hidden' name='name' value={product.name} />
+                    {product.featured_image ? (
+                      <input type='hidden' name='image' value={product.featured_image.url} />
+                    ) : null}
+                  </form>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        <div className='col-span-full flex justify-center mt-12'>
+          <Pagination totalCount={totalCount} limit={limit} />
+        </div>
       </div>
     </Suspense>
   )
