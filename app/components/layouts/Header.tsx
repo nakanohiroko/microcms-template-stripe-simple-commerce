@@ -15,6 +15,8 @@ export function Header(props: { siteInfo: SiteInfo }) {
                 viewBox='0 0 24 24'
                 stroke='currentColor'
                 strokeWidth={2}
+                aria-hidden='true'
+                focusable='false'
               >
                 <path
                   strokeLinecap='round'

@@ -1,4 +1,5 @@
 import { SiteInfo } from '@/app/libs/microcms'
+import Link from 'next/link'
 
 export function Footer({ siteInfo }: { siteInfo: SiteInfo }) {
   const currentYear = new Date().getFullYear()
@@ -14,9 +15,9 @@ export function Footer({ siteInfo }: { siteInfo: SiteInfo }) {
             <h3 className='font-bold text-lg mb-4 text-primary'>ナビゲーション</h3>
             <ul className='space-y-2'>
               <li>
-                <a href='/' className='link link-hover text-base-content/80 hover:text-primary'>
+                <Link href='/' className='link link-hover text-base-content/80 hover:text-primary'>
                   ホーム
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

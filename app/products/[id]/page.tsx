@@ -1,7 +1,8 @@
 import { getProductById } from '@/app/libs/microcms'
 import { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
+import { ProductImageGallery } from '@/app/components/ProductImageGallery'
+import DOMPurify from 'isomorphic-dompurify'
 
 
 type PageProps = {
@@ -46,44 +47,20 @@ export default async function Product({ params, searchParams }: PageProps) {
   if (!product) {
     notFound()
   }
+  // microCMSからのHTMLコンテンツをサニタイズ
+  const sanitizedDescription = product.description
+    ? DOMPurify.sanitize(product.description)
+    : null
+
   return (
     <div className='max-w-7xl mx-auto px-4 py-8 animate-fade-in'>
       <div className='grid lg:grid-cols-2 gap-8 lg:gap-12 mb-12'>
         {/* 商品画像セクション */}
-        <div className='space-y-4'>
-          {product.featured_image ? (
-            <div className='relative aspect-square rounded-xl overflow-hidden bg-base-200 shadow-lg'>
-              <Image
-                src={product.featured_image.url}
-                alt={`Product image of ${product.name}`}
-                width={product.featured_image.width}
-                height={product.featured_image.height}
-                className='w-full h-full object-cover'
-                priority
-              />
-            </div>
-          ) : null}
-          {product.images.length > 0 && (
-            <div className='grid grid-cols-4 gap-2'>
-              {product.images.map((image) => {
-                return (
-                  <div
-                    key={image.url}
-                    className='relative aspect-square rounded-lg overflow-hidden bg-base-200 border border-base-300 hover:border-primary transition-colors cursor-pointer'
-                  >
-                    <Image
-                      src={image.url}
-                      alt={`Product images of ${product?.name}`}
-                      width={image.width}
-                      height={image.height}
-                      className='w-full h-full object-cover'
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
+        <ProductImageGallery
+          featuredImage={product.featured_image}
+          images={product.images}
+          productName={product.name}
+        />
 
         {/* 商品情報セクション */}
         <div className='space-y-6'>
@@ -101,11 +78,11 @@ export default async function Product({ params, searchParams }: PageProps) {
             </div>
           </div>
 
-          {product.description ? (
+          {sanitizedDescription ? (
             <div
               className='prose prose-lg max-w-none text-base-content/80'
               dangerouslySetInnerHTML={{
-                __html: product.description,
+                __html: sanitizedDescription,
               }}
             />
           ) : null}
@@ -123,6 +100,8 @@ export default async function Product({ params, searchParams }: PageProps) {
                 viewBox='0 0 24 24'
                 stroke='currentColor'
                 strokeWidth={2}
+                aria-hidden='true'
+                focusable='false'
               >
                 <path
                   strokeLinecap='round'
@@ -141,31 +120,6 @@ export default async function Product({ params, searchParams }: PageProps) {
           </form>
         </div>
       </div>
-
-      {/* 追加画像セクション */}
-      {product.images.length > 0 && (
-        <div className='mt-16'>
-          <h2 className='text-3xl font-bold mb-8 text-center'>商品ギャラリー</h2>
-          <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {product.images.map((image, index) => {
-              return (
-                <div
-                  key={image.url}
-                  className='relative aspect-square rounded-xl overflow-hidden bg-base-200 shadow-md hover:shadow-xl transition-all duration-300 group'
-                >
-                  <Image
-                    src={image.url}
-                    alt={`Product images of ${product?.name} - ${index + 1}`}
-                    width={image.width}
-                    height={image.height}
-                    className='w-full h-full object-cover transition-transform duration-300 group-hover:scale-110'
-                  />
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

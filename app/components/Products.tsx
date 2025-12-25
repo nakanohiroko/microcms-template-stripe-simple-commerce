@@ -62,6 +62,8 @@ export async function Products({ offset }: { offset?: number }) {
                       viewBox='0 0 24 24'
                       stroke='currentColor'
                       strokeWidth={2}
+                      aria-hidden='true'
+                      focusable='false'
                     >
                       <path
                         strokeLinecap='round'
